@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Billing;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -121,6 +121,7 @@ namespace GrpcServer.Services
                 {
                     if (user.Amount >= request.Amount)
                     {
+                       
                         long counter = request.Amount;
                         output.Status = Response.Types.Status.Ok;
                         output.Comment = $"moved {request.Amount} coins from {request.SrcUser} to {request.DstUser}";
@@ -153,6 +154,7 @@ namespace GrpcServer.Services
                                         Console.WriteLine($"{user1.Name} + {user1.Amount} + {user1.Info}");
                                         Console.WriteLine("FROM");
                                         Console.WriteLine($"{user.Name} + {user.Amount} + {user.Info}");
+
                                     }
                                 }
                                 break;
@@ -176,7 +178,7 @@ namespace GrpcServer.Services
                                             int temp_history = Int32.Parse(coin.History);
                                             temp_history += 1;
                                             coin.History = temp_history.ToString();
-                                           
+
                                         }
                                     }
                                 }
@@ -187,11 +189,12 @@ namespace GrpcServer.Services
                             }
                         }
                     }
-                    else
+                    else 
                     {
                         output.Status = Response.Types.Status.Failed;
                         output.Comment = $"Coins movement failed";
                     }
+                    break;
                 }
                 else
                 {
