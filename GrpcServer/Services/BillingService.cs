@@ -65,25 +65,37 @@ namespace GrpcServer.Services
         public override Task<Response> CoinsEmission(EmissionAmount request, ServerCallContext context)
         {
             Response output = new Response();
-        
+  
             output.Status =  Response.Types.Status.Ok;
           
             foreach(var user in users)
             {
                 rates += user.Rating;
             }
-
             foreach (var user in users)
             {
-                var my_amount = (10 * user.Rating) / rates;
+                var my_amount = (request.Amount * user.Rating) / rates;
                 my_amount = (float)(Math.Round(my_amount, 1));
+                if (my_amount < 0.5)
+                {
+                    user.Amount += 1;
+                    request.Amount -= 1;
+                    
+                }
 
+            }
+            foreach (var user in users)
+            {
+                var my_amount = (request.Amount * user.Rating) / rates;
+                my_amount = (float)(Math.Round(my_amount, 1));
+                
                 if ((my_amount - (float)(Math.Truncate(my_amount))) >= 0.5)
                 {
                     my_amount += 1;
                 }
                 int int_amount = (int)my_amount;
-                user.Amount = int_amount;
+                if (user.Amount == 0)
+                    user.Amount = int_amount;
                
                 user.Info += int_amount.ToString();
                 for (int i = 0; i < user.Amount; i++)
@@ -98,13 +110,13 @@ namespace GrpcServer.Services
                     });
                     user.Info += $"{numb.ToString()}id";
                 }
-                
+
                 
 
             }
             
             output.Comment = $"Emission {request.Amount} coins";
-           
+            
             return Task.FromResult(output);
 
         }
